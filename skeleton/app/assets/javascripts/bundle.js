@@ -82,7 +82,9 @@ $(() => {
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+const APIUtil = __webpack_require__(2);
 
 class FollowToggle {
   constructor ($el) {
@@ -94,27 +96,76 @@ class FollowToggle {
   }
 
   render () {
-    this.$el.text(this.followState === "followed" ? "Unfollow!" : "Follow!");
+
+    switch (this.followState) {
+      case "followed":
+        this.$el.prop("disabled", false);
+        this.$el.text("Unfollow!");
+        break;
+      case "unfollowed":
+        this.$el.prop("disabled", false);
+        this.$el.text("Follow!");
+        break;
+      case "following":
+        this.$el.prop("disabled", true);
+        this.$el.text("Following");
+        break;
+      case "unfollowing":
+        this.$el.prop("disabled", true);
+        this.$el.text("Unfollowing");
+        break;
+    }
+
   }
 
   handleClick (e) {
     e.preventDefault();
-    const meth = this.followState === "followed" ? 'delete' : 'post';
-    const that = this;
-    $.ajax( {
-      method: meth,
-      url: `/users/${this.userId}/follow`,
-      dataType: 'json',
-      success: () => {
-        this.followState = this.followState === "followed" ? "unfollowed" : "followed";
-        this.render();
-      }
-    });
-  }
 
+    if (this.followState === "followed") {
+      this.followState = "unfollowing";
+      this.render();
+      APIUtil.unfollowUser(this.userId).then(() => {
+        this.followState ="unfollowed";
+        this.render();
+      });
+    } else {
+      this.followState = "following";
+      this.render();
+      APIUtil.followUser(this.userId).then(() => {
+        this.followState ="followed";
+        this.render();
+      });
+    }
+  }
 }
 
 module.exports = FollowToggle;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+
+const APIUtil = {
+  followUser: id => {
+    return APIUtil.changeFollowStatus(id, 'POST');
+  },
+
+  unfollowUser: id => {
+    return APIUtil.changeFollowStatus(id, 'DELETE');
+  },
+
+  changeFollowStatus: (id, method) => {
+    return $.ajax( {
+      method: method,
+      url: `/users/${id}/follow`,
+      dataType: 'json'
+    });
+  }
+};
+
+module.exports = APIUtil;
 
 
 /***/ })
