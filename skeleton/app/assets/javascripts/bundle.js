@@ -68,8 +68,36 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const FollowToggle = __webpack_require__(1);
+
+$(() => {
+  const $buttons = $('.follow-toggle');
+  $buttons.each( (_, button) => {
+    new FollowToggle ($(button));
+  });
+});
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports) {
 
+class FollowToggle {
+  constructor ($el) {
+    this.$el = $el;
+    this.userId = $el.find("data-user-id");
+    this.followState = $el.find("data-initial-follow-state");
+    this.render();
+  }
+
+  render () {
+    this.$el.text(this.followState === "followed" ? "Follow!" : "Unfollow!");
+  }
+}
+
+module.exports = FollowToggle;
 
 
 /***/ })
