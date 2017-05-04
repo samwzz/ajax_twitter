@@ -16,13 +16,12 @@ const APIUtil = {
     });
   },
 
-  searchUsers: (query, success) => {
+  searchUsers: (query) => {
     return $.ajax( {
       method: 'GET',
       url: '/users/search',
       dataType: 'json',
-      data: { query },
-      success: success
+      data: { query }
     });
   }
 };

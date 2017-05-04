@@ -9,12 +9,17 @@ class UsersSearch {
   }
 
   handleInput () {
-    APIUtil.searchUsers(this.$input.val(), this.renderResults );
-    console.log("hi");
+    APIUtil.searchUsers(this.$input.val()).then(users => this.renderResults(users));
   }
 
-  renderResults (usernames) {
-    console.log(usernames);
+  renderResults (users) {
+    this.$ul.empty();
+
+    users.forEach((user) => {
+      const $li = $("<li>");
+      $li.html(`<a href="#">${user.username}</a>`);
+      this.$ul.append($li);
+    });
   }
 }
 
