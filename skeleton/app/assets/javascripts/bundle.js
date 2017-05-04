@@ -71,12 +71,17 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 const FollowToggle = __webpack_require__(1);
+const UsersSearch = __webpack_require__(3);
 
 $(() => {
   const $buttons = $('.follow-toggle');
   $buttons.each( (_, button) => {
-    new FollowToggle ($(button));
+    new FollowToggle($(button));
   });
+
+  const $searches = $('.users-search');
+  const $search = $($searches[0]);
+  new UsersSearch($search);
 });
 
 
@@ -162,10 +167,47 @@ const APIUtil = {
       url: `/users/${id}/follow`,
       dataType: 'json'
     });
+  },
+
+  searchUsers: (query, success) => {
+    return $.ajax( {
+      method: 'GET',
+      url: '/users/search',
+      dataType: 'json',
+      data: { query },
+      success: success
+    });
   }
 };
 
 module.exports = APIUtil;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const APIUtil = __webpack_require__(2);
+
+class UsersSearch {
+  constructor ($el) {
+    this.$el = $el;
+    this.$input = $el.find("input");
+    this.$ul = $el.find(".users");
+    this.$input.on("input", this.handleInput.bind(this));
+  }
+
+  handleInput () {
+    APIUtil.searchUsers(this.$input.val(), this.renderResults );
+    console.log("hi");
+  }
+
+  renderResults (usernames) {
+    console.log(usernames);
+  }
+}
+
+module.exports = UsersSearch;
 
 
 /***/ })
